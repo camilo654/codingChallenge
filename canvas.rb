@@ -12,14 +12,14 @@ class DrawingTool
     while @continue
       puts comand = @UInput.read
       if comand[0] == 'C'
-        @canvas = Canvas.new(comand[1], comand[2])
+        @canvas = Canvas.new(comand)
       elsif comand[0] == 'Q'
-        continue = false
+        @continue = false
       else
         puts "dibujando"
-        # @canvas.execute comand
+        @canvas.execute comand
+        # @continue = false
       end
-      @continue = false
     end
   end
 end
@@ -30,7 +30,9 @@ class UInput
 
   def read
     puts "Ingrese comando"
-    entrada = "C 2 2".split(" ")
+    entrada = gets.chomp.split(" ")
+    # entrada = "C 6 3".split(" ")
+    # entrada = "C 6 3".split(" ")
   end
 
   # def validate
@@ -39,30 +41,53 @@ class UInput
 end
 
 class Canvas
-  def initialize width, height
-    @width = width
-    @height = height
+  def initialize comand
+    @width = comand[1].to_i
+    @height = comand[2].to_i
     createMatrix
     drawCanvas
   end
 
-  # def execute comand
-  #   case comand[0]
-  #   when "L"
-  #     drawLine comand
-  #   when "R"
-  #     drawRectangle comand
-  #   when "B"
-  #     paintArea comand
-  #   else
-  #     puts "Nones"
-  #   end
-  # end
+  def execute comand
+    case comand[0]
+    when "L"
+      drawLine comand
+    when "R"
+      drawRectangle comand
+    when "B"
+      paintArea comand
+    else
+      puts "Nones"
+    end
+    drawCanvas
+  end
 
   private
-  # def drawLine
-  #
-  # end
+
+  def createMatrix
+    @matrix = Array.new(@width, [])
+    for i in (0..@height-1)
+      @matrix[0] << " "
+    end
+  end
+
+  def drawLine comand
+    # "C 20 4"
+    # "L 1 2 6 2"
+    x1 = comand[1].to_i
+    x2 = comand[2].to_i
+    y1 = comand[3].to_i
+    y2 = comand[4].to_i
+    for i in (x1..y1)
+      puts "i: #{i}"
+      drawCanvas
+      for j in (x2..y2)
+        puts "j: #{j}"
+        @matrix[i][j] = "X"
+        drawCanvas
+      end
+    end
+  end
   #
   # def drawRectangle
   #
@@ -72,21 +97,20 @@ class Canvas
   #
   # end
 
-  def createMatrix
-    @matrix = Array.new(@width.to_i, [])
-    @matrix.each do |column|
-      column = Array.new(@height.to_i, [1])
-    end
-    puts @matrix
-  end
-
   def drawCanvas
-    puts "matriz de #{@width} * #{@height}"
-    @matrix.each do |column|
-      # @colum.each do |item|
-        puts item
-      # end
+    rayas = "--"
+    for n in (1..@width)
+      rayas+="-"
     end
+    puts rayas
+    for i in(0..@height - 1)
+      fila = ""
+      for j in(0..@width-1)
+        fila += @matrix[j][i].to_s
+      end
+      puts "|" + fila + "|"
+    end
+    puts rayas
   end
 end
 
@@ -97,10 +121,10 @@ puts "Corremos"
 
 # MATRICES
 # puts Matrix.build(3) { rand }
-# matriz = Matrix.build(2, 2) {|row, col| 0 }
-# puts matriz
-# puts matriz[0]
-# matriz.each do |filas|
+# matrix = Matrix.build(2, 2) {|row, col| 0 }
+# puts matrix
+# puts matrix[0]
+# matrix.each do |filas|
 #   puts filas
 #   # filas.each do |colum|
 #   #   puts colum
@@ -108,30 +132,27 @@ puts "Corremos"
 # end
 
 # ARRAYS
-array = Array.new(2, [" "," "])
-array = Array.new(5, ["X","X"])
+# array = Array.new(2, [" "," "])
+# array = Array.new(5, ["X","X"])
 
-#Hacer Matriz
+#Hacer matrix
 ancho = 5
 alto = 7
-matriz = Array.new(ancho, [])
-puts matriz.length
-puts matriz[0].class
+matrix = Array.new(ancho, [])
 for i in (0..alto-1)
-  puts "i: #{i}"
-  # for j in (0..alto-1)
-    # puts "  j: #{j}"
-    matriz[0] << "X"
-    # puts matriz[i][j]
-  # end
-  # puts matriz[i].length
+  matrix[0] << " "
 end
-puts "Matriz: #{matriz}"
+puts "matrix: #{matrix}"
+matrix[3] = [" "," ","X"," "," "," "," "]
+puts "matrix[3]: #{matrix[3]}"
+puts "matrix[3][0]: ,#{matrix[3][0]},"
+puts "matrix[3][2]: #{matrix[3][2]}"
+matrix[3][2] = "Y"
+puts "matrix[3]: #{matrix[3]}"
+puts "matrix[3][0]: ,#{matrix[3][0]},"
+puts "matrix[3][2]: #{matrix[3][2]}"
 #IMPRIMIR
 filas = alto
-puts filas
-# filas = 5
-# columnas = array.length
 columnas = ancho
 rayas = "--"
 for n in (1..columnas)
@@ -139,11 +160,23 @@ for n in (1..columnas)
 end
 puts rayas
 for i in(0..filas - 1)
-  # puts "i: #{i}"
   fila = ""
   for j in(0..columnas-1)
-    fila += matriz[j][i].to_s
+    fila += matrix[j][i].to_s
   end
   puts "|"+fila+"|"
 end
 puts rayas
+
+matrix.each do |item|
+  puts item.inspect
+end
+
+#Imprimir
+for i in(0..filas - 1)
+  fila = ""
+  for j in(0..columnas-1)
+    fila += matrix[j][i].to_s
+  end
+  puts "|"+fila+"|"
+end
