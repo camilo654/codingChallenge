@@ -1,12 +1,8 @@
-# require 'matrix'
-
 class DrawingTool
   def initialize
     @UInput = UInput.new()
     @continue = true
   end
-
-  # attr_reader :continue
 
   def run
     while @continue
@@ -17,24 +13,16 @@ class DrawingTool
         @continue = false
       else
         @canvas.execute command
-        # @continue = false
       end
     end
   end
 end
 
 class UInput
-  # def initialize
-  # end
-
   def read
     puts "Ingrese commando"
     entrada = gets.chomp.split(" ")
   end
-
-  # def validate
-  #
-  # end
 end
 
 class Canvas
@@ -54,13 +42,12 @@ class Canvas
     when "B"
       paintArea command
     else
-      puts "Nones"
+      puts "Comando erroneo."
     end
     drawCanvas
   end
 
   private
-
   def createMatrix
     @matrix = []
     for columna in (0..@width-1)
@@ -72,7 +59,6 @@ class Canvas
   end
 
   def drawLine command
-    # puts command.inspect
     x1 = command[1].to_i - 1
     y1 = command[2].to_i - 1
     x2 = command[3].to_i - 1
@@ -112,9 +98,41 @@ class Canvas
     puts rayas
   end
 
-  # def paintArea
-  #
-  # end
+  def paintArea command
+    x = command[1].to_i - 1
+    y = command[2].to_i - 1
+    char = command[3]
+    if validCoordinate x, y, "X"
+      queue = Array.new
+      queue.push([x,y])
+      while !queue.empty?
+        if validCoordinate x-1, y, char
+          queue.push([x-1, y])
+        end
+        if validCoordinate x+1, y, char
+          queue.push([x+1, y])
+        end
+        if validCoordinate x, y-1, char
+          queue.push([x, y-1])
+        end
+        if validCoordinate x, y+1, char
+          queue.push([x, y+1])
+        end
+        @matrix[x][y] = char
+        queue.shift()
+        coordinate = queue.first if !queue.empty?
+        x = coordinate[0]
+        y = coordinate[1]
+      end
+    end
+  end
+
+  def validCoordinate x, y, char
+    if x < 0 || y < 0 || x > @width - 1 || y > @height - 1 || @matrix[x][y] == char || @matrix[x][y] == "X"
+      return false
+    end
+    return true
+  end
 
 end
 
