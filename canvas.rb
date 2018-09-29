@@ -1,30 +1,3 @@
-class DrawingTool
-  def initialize
-    @UInput = UInput.new()
-    @continue = true
-  end
-
-  def run
-    while @continue
-      puts command = @UInput.read
-      if command[0] == 'C'
-        @canvas = Canvas.new(command)
-      elsif command[0] == 'Q'
-        @continue = false
-      else
-        @canvas.execute command
-      end
-    end
-  end
-end
-
-class UInput
-  def read
-    puts "Ingrese commando"
-    entrada = gets.chomp.split(" ")
-  end
-end
-
 class Canvas
   def initialize command
     @width = command[1].to_i
@@ -58,6 +31,22 @@ class Canvas
     end
   end
 
+  def drawCanvas
+    rayas = "--"
+    for n in (1..@width)
+      rayas += "-"
+    end
+    puts rayas
+    for i in(0..@height - 1)
+      fila = ""
+      for j in(0..@width-1)
+        fila += @matrix[j][i].to_s
+      end
+      puts "|" + fila + "|"
+    end
+    puts rayas
+  end
+
   def drawLine command
     x1 = command[1].to_i - 1
     y1 = command[2].to_i - 1
@@ -82,43 +71,27 @@ class Canvas
     drawLine ["" ,x2, y1+1, x2, y2-1]
   end
 
-  def drawCanvas
-    rayas = "--"
-    for n in (1..@width)
-      rayas+="-"
-    end
-    puts rayas
-    for i in(0..@height - 1)
-      fila = ""
-      for j in(0..@width-1)
-        fila += @matrix[j][i].to_s
-      end
-      puts "|" + fila + "|"
-    end
-    puts rayas
-  end
-
   def paintArea command
     x = command[1].to_i - 1
     y = command[2].to_i - 1
-    char = command[3]
+    color = command[3]
     if validCoordinate x, y, "X"
       queue = Array.new
       queue.push([x,y])
       while !queue.empty?
-        if validCoordinate x-1, y, char
+        if validCoordinate x-1, y, color
           queue.push([x-1, y])
         end
-        if validCoordinate x+1, y, char
+        if validCoordinate x+1, y, color
           queue.push([x+1, y])
         end
-        if validCoordinate x, y-1, char
+        if validCoordinate x, y-1, color
           queue.push([x, y-1])
         end
-        if validCoordinate x, y+1, char
+        if validCoordinate x, y+1, color
           queue.push([x, y+1])
         end
-        @matrix[x][y] = char
+        @matrix[x][y] = color
         queue.shift()
         coordinate = queue.first if !queue.empty?
         x = coordinate[0]
@@ -127,16 +100,10 @@ class Canvas
     end
   end
 
-  def validCoordinate x, y, char
-    if x < 0 || y < 0 || x > @width - 1 || y > @height - 1 || @matrix[x][y] == char || @matrix[x][y] == "X"
+  def validCoordinate x, y, color
+    if x < 0 || y < 0 || x > @width - 1 || y > @height - 1 || @matrix[x][y] == color || @matrix[x][y] == "X"
       return false
     end
     return true
   end
-
 end
-
-puts "Iniciamos"
-drawingTool = DrawingTool.new()
-puts "Corremos"
-drawingTool.run
